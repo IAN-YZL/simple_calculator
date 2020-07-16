@@ -12,19 +12,25 @@ function listenClick() {
     let text = document.getElementsByTagName("td");
     for (let i = 0; i < text.length; i++) {
         text[i].addEventListener("click", function() {
-            if (tempNum.length >= 13) {
-                display.innerHTML = 'error';  
+            let input = text[i].id;
+            if (otherSign.includes(input)) {
+                otherOperation(input);
+            } else if (tempNum.length >= 13) {
+                display.innerHTML = 'error';
+                // tempNum = '';
             } else{
-                let input = text[i].id;
                 if (!arithmetic.includes(input) && !otherSign.includes(input)) {
                     if (input === '.') {
                         pointCheck();
+                        display.innerHTML = tempNum;
                     } else if (!pressEqual){
                         tempNum += input;
+                        display.innerHTML = parseFloat(tempNum);
                     } else {
                         tempNum = input;
+                        pressEqual = false;
+                        display.innerHTML = parseFloat(tempNum);
                     }
-                    display.innerHTML = tempNum;
                 } else if (arithmetic.includes(input)) {
                     if (isSavedNum) {
                         performCalculation();
@@ -37,9 +43,7 @@ function listenClick() {
                     tempNum = '';
                     isSavedNum = true;
                     sign = input;
-                } else if (otherSign.includes(input)) {
-                    otherOperation(input);
-                }
+                } 
             }
         });
     }
@@ -49,7 +53,6 @@ function resetCalculator() {
     result = 0;
     tempNum = '';
     isSavedNum = false;
-    display.innerHTML = 0;
     pressEqual = false;
 }
 
@@ -95,6 +98,7 @@ function otherOperation(input) {
     switch (input) {
         case 'reset':
             resetCalculator();
+            display.innerHTML = 0;
             break;
         case 'equal':
             performCalculation();
