@@ -1,6 +1,8 @@
+'use strict'
+
 let result = 0;
-let tempNum = '';
-let savedNum = '';
+let tempNum = 0;
+let savedNum = 0;
 let sign;
 let isSavedNum = false;
 let pressEqual = false;
@@ -11,13 +13,15 @@ const otherSign = ['history', 'reset', 'equal'];
 function listenClick() {
     let text = document.getElementsByTagName("td");
     for (let i = 0; i < text.length; i++) {
+        text[i].onmousedown = () => {
+            text[i].style.backgroundColor = 'black';
+        }
         text[i].addEventListener("click", function() {
             let input = text[i].id;
             if (otherSign.includes(input)) {
                 otherOperation(input);
             } else if (tempNum.length >= 13) {
                 display.innerHTML = 'error';
-                // tempNum = '';
             } else{
                 if (!arithmetic.includes(input) && !otherSign.includes(input)) {
                     if (input === '.') {
@@ -39,20 +43,21 @@ function listenClick() {
                         savedNum = result;
                     } else {
                         savedNum = tempNum;
+                        isSavedNum = true;
                     }
-                    tempNum = '';
-                    isSavedNum = true;
+                    tempNum = 0;
                     sign = input;
                 } 
             }
-        });
+            handleError();
+        })
     }
 }
 
 function resetCalculator() {
     result = 0;
-    tempNum = '';
-    savedNum = '';
+    tempNum = 0;
+    savedNum = 0;
     isSavedNum = false;
     pressEqual = false;
 }
@@ -66,10 +71,10 @@ function pointCheck() {
 }
 
 function performCalculation() {
-    if (tempNum === '') {
+    if (tempNum === 'error') {
         tempNum = 0;
     }
-    if (savedNum === '') {
+    if (savedNum === 'error') {
         savedNum = 0;  
     }
     switch (sign) {
@@ -83,13 +88,20 @@ function performCalculation() {
             result = parseFloat(savedNum) * parseFloat(tempNum);
             break;
         case 'divide':
-            result = parseFloat(savedNum) / parseFloat(tempNum);
+            if (tempNum == 0) {
+                result = 'error';
+            } else {
+                result = parseFloat(savedNum) / parseFloat(tempNum);
+            }
         default:
             break;
     }
 }
 
 function checkResult() {
+    if (result === NaN) {
+        result = 0;
+    }
     if (result.toString().length > 13) {
         result = result.toString().substr(0, 13);  
     }
@@ -109,6 +121,9 @@ function otherOperation(input) {
             isSavedNum = false;
             pressEqual = true;
         case 'history':
+            if (result === 'error') {
+                result = 0;
+            }
             tempNum = result;
             display.innerHTML = result;
         default:
@@ -117,8 +132,52 @@ function otherOperation(input) {
 
 }
 
+function handleError() {
+    if (result === 'error') {
+        result = 0;   
+    }
+    if (tempNum === 'error') {
+        tempNum = 0;   
+    }
+    if (savedNum === 'error') {
+        savedNum = 0;   
+    }
 
+}
+
+function mouseUp() {
+    let num = document.getElementsByClassName('calculator__num');
+    for (let i = 0; i < num.length; i++) {
+        num[i].onmouseup = () => {
+            num[i].style.backgroundColor = '#646464';
+        }
+    }
+
+    let button = document.getElementsByClassName('calculator__arithmetic');
+    for (let i = 0; i < button.length; i++) {
+        button[i].onmouseup = () => {
+            button[i].style.backgroundColor = '#e3b81d';
+        }     
+    }
+
+    let resetBtn = document.getElementById('reset');
+    resetBtn.onmouseup = () => {
+        resetBtn.style.backgroundColor = '#fc4d42';
+    }
+
+
+    let historyBtn = document.getElementById('history');
+    historyBtn.onmouseup = () => {
+        historyBtn.style.backgroundColor = '#2b8ae3';
+    }
+
+    let equalBtn = document.getElementById('equal');
+    equalBtn.onmouseup = () => {
+        equalBtn.style.backgroundColor = '#2b8ae3';
+    }
+}
 
 window.onload = function() {
     this.listenClick();
+    this.mouseUp();
 }
