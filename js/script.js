@@ -52,6 +52,7 @@ function listenClick() {
 function resetCalculator() {
     result = 0;
     tempNum = '';
+    savedNum = '';
     isSavedNum = false;
     pressEqual = false;
 }
@@ -115,6 +116,8 @@ function otherOperation(input) {
     }
 
 }
+
+
 
 window.onload = function() {
     this.listenClick();
